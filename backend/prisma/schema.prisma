@@ -1,0 +1,358 @@
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  MERCHANT
+  ADMIN
+}
+
+enum StatusIndicator {
+  ACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum ShopStatus {
+  ACTIVE
+  INACTIVE
+  UNDER_REVIEW
+  SUSPENDED
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  ACTIVE
+  EXPIRED
+  PENDING
+  CANCELED
+  FAILED
+}
+
+model Account {
+  id           String         @id @default(uuid())
+  firstName    String
+  lastName     String
+  role         Role           @default(CUSTOMER)
+  email        String         @unique
+  cart         Cart?
+  orders       Order[]
+  password     String
+  profileUrl   String?
+  refreshToken String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  merchant     Merchant?
+  admin        Admin?
+  customer     Customer?
+  Notification Notification[]
+
+  @@map("accounts")
+}
+
+model Merchant {
+  id               String             @id @default(uuid())
+  accountId        String             @unique
+  account          Account            @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  identityCard     String
+  locationId       String
+  businessName     String
+  ownerName        String
+  businessPhone    String             @unique
+  businessEmail    String             @unique
+  cbeAccountNo     String             @unique
+  businessType     String
+  status           StatusIndicator    @default(PENDING)
+  registrationDate DateTime           @default(now())
+  location         Location           @relation(fields: [locationId], references: [id])
+  shops            Shop[]
+  templates        MerchantTemplate[]
+  Payment          Payment[]
+
+  @@map("merchants")
+}
+
+model Admin {
+  id        String  @id @default(uuid())
+  accountId String  @unique
+  account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("admins")
+}
+
+model Customer {
+  id         String    @id @default(uuid())
+  accountId  String    @unique
+  account    Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  orders     Order[]
+  locationId String?
+  location   Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+
+  @@map("customers")
+}
+
+model Shop {
+  id                 String            @id @default(uuid())
+  merchantId         String
+  merchant           Merchant          @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  name               String
+  slug               String            @unique
+  description        String?
+  locationId         String
+  location           Location          @relation(fields: [locationId], references: [id])
+  businessHours      Json?
+  socialMedia        Json?
+  bannerImageUrl     String?
+  domain             String?
+  logoImageUrl       String?
+  status             ShopStatus        @default(ACTIVE)
+  approved           Boolean           @default(false)
+  verified           Boolean           @default(false)
+  verificationId     String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  products           Product[]
+  orders             Order[]
+  merchantTemplateId String?           @unique
+  merchantTemplate   MerchantTemplate? @relation(fields: [merchantTemplateId], references: [id], onDelete: SetNull)
+  Payment            Payment[]
+  Analytics          Analytics[]
+
+  @@index([name])
+  @@index([slug])
+  @@index([createdAt])
+  @@map("shops")
+}
+
+model Location {
+  id        String     @id @default(uuid())
+  town      String
+  country   String
+  region    String
+  kebele    String
+  woreda    String
+  merchants Merchant[]
+  shops     Shop[]
+  orders    Order[]
+  Customer  Customer[]
+
+  @@map("locations")
+}
+
+model BaseTemplate {
+  id                String             @id @default(uuid())
+  name              String
+  description       String
+  basePrice         Float
+  previewUrls       String[]
+  status            StatusIndicator    @default(PENDING)
+  pages             BasePage[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  merchantTemplates MerchantTemplate[]
+
+  @@unique([name])
+  @@index([name])
+  @@map("base_templates")
+}
+
+model BasePage {
+  id         String       @id @default(uuid())
+  name       String
+  html       String
+  css        String
+  js         String
+  templateId String
+  template   BaseTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@index([templateId])
+  @@map("base_pages")
+}
+
+model MerchantTemplate {
+  id             String        @id @default(uuid())
+  merchantId     String
+  name           String
+  description    String
+  baseTemplateId String
+  baseTemplate   BaseTemplate  @relation(fields: [baseTemplateId], references: [id])
+  customPages    CustomPage[]
+  paymentStatus  PaymentStatus @default(PENDING)
+  isInUse        Boolean       @default(true)
+  isActive       Boolean       @default(false)
+  version        String        @default("1.0.0")
+  activatedAt    DateTime?     @default(now())
+  expiresAt      DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  merchant       Merchant      @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  shop           Shop?
+
+  @@index([merchantId])
+  @@map("merchant_templates")
+}
+
+model CustomPage {
+  id                 String           @id @default(uuid())
+  name               String
+  html               String
+  css                String
+  js                 String
+  merchantTemplateId String
+  merchantTemplate   MerchantTemplate @relation(fields: [merchantTemplateId], references: [id], onDelete: Cascade)
+
+  @@index([merchantTemplateId])
+  @@map("custom_pages")
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  customer      Customer    @relation(fields: [customerId], references: [id])
+  customerId    String
+  shop          Shop        @relation(fields: [shopId], references: [id])
+  shopId        String
+  items         OrderItem[]
+  location      Location    @relation(fields: [locationId], references: [id])
+  locationId    String
+  status        OrderStatus @default(PENDING)
+  totalAmount   Float
+  paymentMethod String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  account       Account?    @relation(fields: [accountId], references: [id])
+  accountId     String?
+  payments      Payment[]
+  Product       Product?    @relation(fields: [productId], references: [id])
+  productId     String?
+
+  @@index([customerId])
+  @@index([shopId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id        String @id @default(uuid())
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String
+  productId String
+  name      String
+  price     Float
+  quantity  Int
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Product {
+  id            String          @id @default(uuid())
+  name          String
+  description   String
+  price         Float
+  discountPrice Float?
+  quantity      Int
+  carts         CartItem[] // Back-relation
+  category      String
+  status        StatusIndicator @default(PENDING)
+  images        String[]
+  brand         String?
+  ratings       Float           @default(0.0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  shopId        String
+  shop          Shop            @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  orders        Order[]
+
+  @@map("products")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      Account  @relation(fields: [userId], references: [id])
+  type      String? // e.g. NEW_ORDER, ORDER_CANCELLED
+  message   String
+  metadata  String? // JSON data (e.g., orderId, productId)
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id      String  @id @default(uuid())
+  orderId String? // Payment for an order (if applicable)
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  merchantId String? // Payment by a merchant (e.g. for template)
+  merchant   Merchant? @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  shopId         String? // Payment related to a shop
+  shop           Shop?         @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  amount         Float
+  status         PaymentStatus @default(PENDING)
+  paymentMethod  String // e.g., 'CBE', 'Telebirr', 'Card'
+  transactionRef String        @unique
+  paidAt         DateTime? // null until paid
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  user      Account    @relation(fields: [userId], references: [id])
+  userId    String     @unique
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  expiresAt DateTime?  @default(dbgenerated("NOW() + INTERVAL '30 days'"))
+
+  // Optimized for frequent cart lookup
+  @@index([userId, updatedAt])
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int      @default(1) // Custom validation
+  price     Float?
+  addedAt   DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Composite unique constraint + index
+  @@unique([cartId, productId])
+  @@index([productId, cartId]) // Reverse lookup
+  @@map("cart_items")
+}
+
+model Analytics {
+  id         String   @id @default(uuid())
+  shopId     String
+  shop       Shop     @relation(fields: [shopId], references: [id])
+  date       DateTime
+  visitors   Int      @default(0)
+  pageViews  Int      @default(0)
+  orders     Int      @default(0)
+  revenue    Float    @default(0)
+  bounceRate Float    @default(0)
+
+  @@unique([shopId, date])
+  @@index([date])
+  @@index([shopId])
+  @@map("analytics")
+}

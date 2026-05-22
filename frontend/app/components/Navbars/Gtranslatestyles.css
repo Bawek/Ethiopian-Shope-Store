@@ -1,0 +1,32 @@
+/* Add this to your global CSS file (globals.css) */
+#google_translate_element {
+    position: fixed !important;
+    top: 10px !important;
+    right: 10px !important;
+    z-index: 1000 !important;
+    max-width: 30px !important;
+  }
+  
+  .goog-te-gadget {
+    font-size: 0 !important; /* Hide the text */
+  }
+  
+  .goog-te-combo {
+    width: 30px !important; /* Make the dropdown smaller */
+    height: 30px !important;
+    background: transparent !important;
+    border: none !important;
+    color: transparent !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+  }
+  
+  .goog-te-combo::after {
+    content: "🌐" !important; /* Add a globe icon */
+    font-size: 20px !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }

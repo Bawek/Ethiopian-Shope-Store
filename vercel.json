@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "frontend/next.config.mjs", "use": "@vercel/next" }
+  ]
+}
