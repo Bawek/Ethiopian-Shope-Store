@@ -5,7 +5,7 @@ import Backdrop from "./backdrop";
 import NavBar from "./NavBar";
 import { Button } from "@/components/ui/button";
 import AdminNavbar from "../Navbars/AdminNavbar";
-import TemplateNavbar from "@/app/[locale]/web-builder/templates/template1/NavBar";
+import TemplateNavbar from "@/app/web-builder/templates/template1/NavBar";
 const DroppableContainer = () => {
   const [isMobileView, setMobileView] = useState(false);
   function toggleView(view) {
