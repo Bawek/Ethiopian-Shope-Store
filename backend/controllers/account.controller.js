@@ -77,11 +77,11 @@ const login = async (req, res, next) => {
             }
         })
         if (!accountExist) {
-            return new httpError('incorrect email. please enter corrrect one or  register Firest', 404)
+            return next(new httpError('Incorrect email. Please enter a correct one or register first.', 404))
         }
         const isMatched = await bcrypt.compare(password, accountExist.password)
         if (!isMatched) {
-            return new httpError('Incorrect password please enter correct password', 401)
+            return next(new httpError('Incorrect password. Please enter the correct password.', 401))
         }
         const userInfo = {
             accountId: accountExist.id,
@@ -296,7 +296,7 @@ const passwordReset = async (req, res, next) => {
         // Generate a JWT token with a 1-hour expiration
         const token = jwt.sign(
             { userId: user.id },
-            'reset',
+            process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: '4m' }
         );
 

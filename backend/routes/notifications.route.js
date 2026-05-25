@@ -3,14 +3,14 @@ const { getUserNotifications, createNotification, markAllAsRead, markAsRead, del
 
 const router = express.Router()
 
-router.get('/get-notfication/:userId', getUserNotifications);
+router.get('/get-notification/:userId', getUserNotifications);
 
-router.post('create/', createNotification);
+router.post('/create', createNotification);
 
-router.put('update/:id/read', markAsRead);
+router.put('/update/:id/read', markAsRead);
 
 router.put('/get-all/:userId/read-all', markAllAsRead);
 
-router.delete('delete/:id', deleteNotification);
+router.delete('/delete/:id', deleteNotification);
 
-module.exports = router 
+module.exports = router

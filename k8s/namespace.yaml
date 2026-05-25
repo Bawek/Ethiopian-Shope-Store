@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ethiopian-shop
+  labels:
+    name: ethiopian-shop
+    environment: production

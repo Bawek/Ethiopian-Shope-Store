@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import initTranslations from "../i18n.js";
 import Footer from "./components/Footers/Footer.js";
 import Navbar from "./components/Navbars/AuthNavbar.js";
 import { useSelector } from "react-redux";

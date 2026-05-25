@@ -1,0 +1,107 @@
+# ============================================================================
+# DOCKER COMPOSE - DEVELOPMENT CONFIGURATION
+# Override for local development with hot-reload and debugging
+# ============================================================================
+version: '3.9'
+
+services:
+  postgres:
+    environment:
+      POSTGRES_USER: shopuser
+      POSTGRES_PASSWORD: shoppassword
+      POSTGRES_DB: ethiopian_shop_dev
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      PORT: 8000
+      DATABASE_URL: postgresql://shopuser:shoppassword@postgres:5432/ethiopian_shop_dev
+      REDIS_URL: redis://:redispassword@redis:6379
+      BASE_URL: http://localhost:3000
+      FRONTEND_URL: http://localhost:3000
+      ACCESS_TOKEN_SECRET: dev-secret-key-min-32-chars-long-for-testing
+      REFRESH_TOKEN_SECRET: dev-refresh-secret-key-min-32-chars-long-for-testing
+      CHAPA_SECRET_KEY: dev-chapa-secret
+      CHAPA_PUBLIC_KEY: dev-chapa-public
+      CHAPA_ENCRYPTION_KEY: dev-chapa-encryption
+      EMAIL_SERVER_HOST: mailhog
+      EMAIL_SERVER_PORT: 1025
+      EMAIL_SERVER_USER: dev
+      EMAIL_SERVER_PASSWORD: dev
+      ADMIN_EMAIL: admin@dev.local
+      SIGNING_SECRET: dev-signing-secret-min-32-chars-long-for-testing
+      CORS_ORIGIN: http://localhost:3000,http://localhost:3001
+      LOG_LEVEL: debug
+      LOG_FORMAT: text
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "8000:8000"
+      - "9229:9229"  # Node debugger
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+
+  # ============================================================================
+  # MailHog - Email Testing
+  # ============================================================================
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: ethiopian-shop-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - app-network
+
+  # ============================================================================
+  # pgAdmin - Database Management
+  # ============================================================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ethiopian-shop-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@dev.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    networks:
+      - app-network
+
+  # ============================================================================
+  # Redis Commander - Redis Management
+  # ============================================================================
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: ethiopian-shop-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379:0:redispassword
+    ports:
+      - "8081:8081"
+    networks:
+      - app-network

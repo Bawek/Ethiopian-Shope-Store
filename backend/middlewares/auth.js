@@ -24,7 +24,7 @@ const auth = async (req, res, next) => {
                 email: true,
                 role: true,
                 status: true,
-                refreshToken: true 
+                refreshToken: true
             }
         });
 
@@ -32,13 +32,9 @@ const auth = async (req, res, next) => {
             return next(new httpError('Account not found', 401));
         }
 
-        // 5. Check if account is active
-        if (account.status !== 'ACTIVE') {
+        // Check if account is active
+        if (account.status === 'INACTIVE') {
             return next(new httpError('Account is not active', 403));
-        }
-
-        if (decoded.tokenVersion !== account.tokenVersion) {
-            return next(new httpError('Token has been invalidated', 401));
         }
 
         // 7. Attach user to request
@@ -56,11 +52,8 @@ const auth = async (req, res, next) => {
         if (error.name === 'JsonWebTokenError') {
             return next(new httpError('Invalid token', 401));
         }
-
         console.error('Authentication error:', error);
         next(new httpError('Authentication failed', 500));
-    } finally {
-        await prisma.$disconnect();
     }
 };
 

@@ -101,7 +101,7 @@ export function AppSidebar(props) {
             © 2025 EE-platform Inc.
           </div>
           <div className="text-center text-gray-500">
-            v1.0.0 | Powered by Mebrat
+            v1.0.0 | Powered by Baweke
           </div>
         </div>
       </SidebarFooter>
