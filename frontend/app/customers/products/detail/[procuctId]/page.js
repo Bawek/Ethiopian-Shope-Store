@@ -8,14 +8,59 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel";
-import {
-  Magnifier,
-  GlassMagnifier,
-  SideBySideMagnifier,
-  PictureInPictureMagnifier,
-  MOUSE_ACTIVATION,
-  TOUCH_ACTIVATION
-} from "react-image-magnifiers";
+// GlassMagnifier — inline replacement (no external package needed)
+function GlassMagnifier({ imageSrc, imageAlt, magnifierSize = 150, style, className }) {
+  const [pos, setPos] = useState(null);
+  const ref = React.useRef(null);
+
+  const handleMove = (e) => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    setPos({
+      x: clientX - rect.left,
+      y: clientY - rect.top,
+      w: rect.width,
+      h: rect.height,
+    });
+  };
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{ position: 'relative', overflow: 'hidden', cursor: 'crosshair', ...style }}
+      onMouseMove={handleMove}
+      onMouseLeave={() => setPos(null)}
+      onTouchMove={handleMove}
+      onTouchEnd={() => setPos(null)}
+    >
+      <img src={imageSrc} alt={imageAlt} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      {pos && (
+        <div
+          style={{
+            position: 'absolute',
+            pointerEvents: 'none',
+            width: magnifierSize,
+            height: magnifierSize,
+            borderRadius: '50%',
+            border: '3px solid rgba(255,255,255,0.8)',
+            boxShadow: '0 0 10px rgba(0,0,0,0.3)',
+            top: pos.y - magnifierSize / 2,
+            left: pos.x - magnifierSize / 2,
+            backgroundImage: `url(${imageSrc})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: `${pos.w * 2.5}px ${pos.h * 2.5}px`,
+            backgroundPositionX: `${-(pos.x * 2.5 - magnifierSize / 2)}px`,
+            backgroundPositionY: `${-(pos.y * 2.5 - magnifierSize / 2)}px`,
+            zIndex: 1001,
+          }}
+        />
+      )}
+    </div>
+  );
+}
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,7 +82,7 @@ import {
   XCircle
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useWindowSize } from "@uidotdev/usehooks";
 import Rating from "../../../components/Rating";
 import { useGetProductsByIdQuery } from "@/lib/features/products/products";
@@ -239,29 +284,9 @@ export default function ProductDetailPage() {
                       <GlassMagnifier
                         imageSrc={imageViewer(img) || '/placeholder-product.jpg'}
                         imageAlt={product.name}
-                        zoomImageSrc={imageViewer(img) || '/placeholder-product.jpg'}
                         className="w-full h-full object-cover"
-                        style={{
-                          position: 'relative',
-                          zIndex: 1000 // High z-index to ensure it's on top
-                        }}
-                        magnifierStyle={{
-                          position: 'absolute',
-                          zIndex: 1001, // Even higher for the magnifier glass itself
-                          boxShadow: '0 0 10px rgba(0,0,0,0.3)'
-                        }}
+                        style={{ position: 'relative', width: '100%', height: '100%' }}
                         magnifierSize={isMobile ? 100 : 150}
-                        magnifierBorderSize={isMobile ? 2 : 3}
-                        magnifierBorderColor="rgba(255, 255, 255, 0.8)"
-                        magnifierOverlayColor="rgba(0, 0, 0, 0.5)"
-                        magnifierOverlayOpacity={0.5}
-                        mouseActivation={MOUSE_ACTIVATION.CLICK}
-                        touchActivation={TOUCH_ACTIVATION.DOUBLE_TAP}
-                        fillLightEnabled={true}
-                        fillLightColor="rgba(255, 255, 255, 0.8)"
-                        fillLightSize={isMobile ? 50 : 75}
-                        fillLightOpacity={0.5}
-                        square={true}
                       />
                     </div>
                   </CarouselItem>
