@@ -1,4 +1,5 @@
 'use client'
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
@@ -82,7 +83,6 @@ import {
   XCircle
 } from "lucide-react";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
 import { useWindowSize } from "@uidotdev/usehooks";
 import Rating from "../../../components/Rating";
 import { useGetProductsByIdQuery } from "@/lib/features/products/products";
