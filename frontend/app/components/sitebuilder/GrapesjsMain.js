@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState, useRef } from "react";
-import { grapesjs } from "grapesjs";
+import grapesjs from "grapesjs";
 
 import 'grapesjs/dist/css/grapes.min.css';
 import dynamicConfig from "./WithGrapesjs";
@@ -87,11 +87,7 @@ const WithGrapesjs = ({ data, page, templateId, refetch }) => {
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log('Image upload response:', data.success, data.url);
-
-            // Check if the response contains the expected URL
             if (data.success && data.url) {
-              console.log('enter hat')
               const images = [{ type: "image", src: data.url }];
               editor.AssetManager.add(images);  // Add the uploaded image to the AssetManager
             } else {
@@ -124,10 +120,8 @@ const WithGrapesjs = ({ data, page, templateId, refetch }) => {
 
       // Events for asset addition/removal
       onAdd: function (asset) {
-        console.log('Asset added:', asset);
       },
       onRemove: function (asset) {
-        console.log('Asset removed:', asset);
       },
 
       // Configuration for asset filters (optional)
@@ -241,7 +235,7 @@ const WithGrapesjs = ({ data, page, templateId, refetch }) => {
       assetManager: conf,
 
     });
-    console.log('the grapes js are called yes thanks')
+
     // const assetManager = editor.AssetManager.conf;
     setEditor(editor);
     addCommands(editor);
@@ -278,16 +272,16 @@ const WithGrapesjs = ({ data, page, templateId, refetch }) => {
 
   /** after loaading of grapejs  */
   const onLoad = (editor) => {
-    console.log('on loaed excuited')
+
     const categories = editor.BlockManager.getCategories();
 
     // Assuming `data` is the prop that contains the updated content
     const homePage = data.find((page) => page.name === "home");
     // Set initial HTML in builder using the updated data
-    console.log(homePage, 'the home page on the loading errect of man')
+
     editor.setComponents(homePage?.content.html || "");
     editor.setStyle(homePage?.content.css || "");
-    console.log(editor, 'the Editorjjjjj page on the loading errect of man')
+
 
     /** Find block categories and make default open false */
     categories.forEach((category) => {
@@ -306,7 +300,7 @@ const WithGrapesjs = ({ data, page, templateId, refetch }) => {
     commands.getAll();
     commands.add("set-device-xs", {
       run(editor) {
-        console.log('hell mobile clicked')
+
         editor.setDevice("Mobile");
       },
     });
@@ -332,7 +326,7 @@ const WithGrapesjs = ({ data, page, templateId, refetch }) => {
     });
     commands.add("open-assset-manager", {
       run(editor) {
-        console.log(EventTarget);
+
         const myCommands = commands.get("core:open-assets");
         myCommands.run(editor, { target: "_blank" });
       },
@@ -403,16 +397,11 @@ const WithGrapesjs = ({ data, page, templateId, refetch }) => {
     //   });
     // };
 
-    editor.on("asset:upload:start", () => {
-      console.log("Start uploading...");
-    });
-
     editor.on("asset:upload:error", (err) => {
       console.error("Error during upload:", err);
     });
 
     editor.on("asset:upload:response", (response) => {
-      console.log("Response from server:", response);
       if (Array.isArray(response)) {
         const images = response.map((item) => ({
           type: "image",
@@ -424,9 +413,7 @@ const WithGrapesjs = ({ data, page, templateId, refetch }) => {
       }
     });
 
-    editor.on("asset:upload:end", () => {
-      console.log("Upload ended.");
-    });
+
   };
 
   //  Life cycle method for loading grapesjs */
@@ -475,7 +462,6 @@ const WithGrapesjs = ({ data, page, templateId, refetch }) => {
         id: pageContent.id,
         ...updateData
       }).unwrap();
-      console.log(result, 'this the reuslt')
       toast.success("Page saved successfully");
 
       if (isPublish) {

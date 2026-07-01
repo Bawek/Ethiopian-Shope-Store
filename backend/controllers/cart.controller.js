@@ -26,7 +26,7 @@ exports.getCart = async (req, res) => {
     });
 
     if (!cart) {
-      return res.status(404).json({ message: 'Cart not found' });
+      return res.json({ items: [], totalItems: 0, totalPrice: 0 });
     }
 
     // Format the response to match frontend expectations

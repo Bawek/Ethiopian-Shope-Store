@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import NotificationPop from "../Prompt/Notification";
-import UserDropdown from "@/app/[locale]/components/Dropdowns/UserDropdown.js";
+import UserDropdown from "@/app/components/Dropdowns/UserDropdown.js";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import { selectAll } from "@/lib/features/auth/accountSlice";

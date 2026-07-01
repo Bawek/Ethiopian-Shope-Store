@@ -75,17 +75,16 @@
     "grapesjs-preset-mautic": "^1.0.4",
     "grapesjs-preset-webpage": "^1.0.3",
     "grapesjs-style-bg": "^2.0.2",
-    "gulp": "^5.0.0",
-    "gulp-append-prepend": "^1.0.9",
+
     "html2canvas": "^1.4.1",
     "i18next": "^24.2.2",
     "i18next-browser-languagedetector": "^8.0.2",
     "i18next-http-backend": "^3.0.2",
     "i18next-resources-to-backend": "^1.2.1",
-    "jquery": "^3.7.1",
+
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.474.0",
-    "multer": "^1.4.5-lts.1",
+
     "next": "15.1.6",
     "next-i18n-router": "^5.5.1",
     "next-themes": "^0.4.4",
@@ -106,7 +105,7 @@
     "redux-persist": "^6.0.0",
     "sass": "^1.85.0",
     "socket.io-client": "^4.8.1",
-    "sonner": "^1.7.3",
+
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",

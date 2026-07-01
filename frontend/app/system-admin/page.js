@@ -15,41 +15,50 @@ export default function Dashboard() {
     orders: null,
     visits: null,
     traffic: null,
-    loading: true,
-    error: null
+    loading: true
   });
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const fetchSingle = async (url) => {
       try {
-        const token = localStorage.getItem('adminToken');
-   
-
-        const [stats, revenue, orders, visits, traffic] = await Promise.all([
-          axios.get('http://localhost:8000/api/admin/dashboard/stats'),
-          axios.get('http://localhost:8000/api/admin/dashboard/revenue'),
-          axios.get('http://localhost:8000/api/admin/dashboard/orders'),
-          axios.get('http://localhost:8000/api/admin/dashboard/visits'),
-          axios.get('http://localhost:8000/api/admin/dashboard/traffic')
-        ]);
-
-        setDashboardData({
-          stats: stats.data,
-          revenue: revenue.data,
-          orders: orders.data,
-          visits: visits.data,
-          traffic: traffic.data,
-          loading: false,
-          error: null
-        });
-      } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
-        setDashboardData(prev => ({
-          ...prev,
-          loading: false,
-          error: error.response?.data?.error || error.message
-        }));
+        const res = await axios.get(url);
+        return res.data.data;
+      } catch {
+        return null;
       }
+    };
+
+    const fetchDashboardData = async () => {
+      const [stats, revenue, orders, visits, traffic] = await Promise.all([
+        fetchSingle('http://localhost:8000/api/admin/dashboard/stats'),
+        fetchSingle('http://localhost:8000/api/admin/dashboard/revenue'),
+        fetchSingle('http://localhost:8000/api/admin/dashboard/orders'),
+        fetchSingle('http://localhost:8000/api/admin/dashboard/visits'),
+        fetchSingle('http://localhost:8000/api/admin/dashboard/traffic')
+      ]);
+
+      const toLineChart = (items, labelKey, valueKey, label, color) =>
+        items ? {
+          performance: {
+            labels: items.map(d => d[labelKey]?.trim()),
+            datasets: [{ label, data: items.map(d => Number(d[valueKey])), borderColor: color, backgroundColor: color.replace(')', ', 0.8)') }]
+          }
+        } : null;
+
+      const toBarChart = (items, labelKey, valueKey, label, color) =>
+        items ? {
+          labels: items.map(d => d[labelKey]?.trim()),
+          datasets: [{ label, data: items.map(d => Number(d[valueKey])), backgroundColor: color }]
+        } : null;
+
+      setDashboardData({
+        stats: stats?.metrics,
+        revenue: toLineChart(revenue?.revenueData, 'month', 'current_year', 'Revenue', '#4c51bf'),
+        orders: toBarChart(orders?.orderData, 'month', 'order_count', 'Orders', '#4c51bf'),
+        visits: visits?.pageVisits,
+        traffic: traffic?.socialTraffic,
+        loading: false
+      });
     };
 
     fetchDashboardData();
@@ -59,16 +68,6 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen w-full flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (dashboardData.error) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          Error: {dashboardData.error}
-        </div>
       </div>
     );
   }
@@ -84,9 +83,9 @@ export default function Dashboard() {
         <div className="flex flex-col gap-4 md:gap-6">
           <SectionCards stats={dashboardData.stats} />
           <div className="px-4 lg:px-6">
-            <CardLineChart revenueData={dashboardData.revenue} />
+            <CardLineChart data={dashboardData.revenue} />
           </div>
-          <CardBarChart orderData={dashboardData.orders} />
+          <CardBarChart data={dashboardData.orders} />
         </div>
         <div className="flex flex-wrap mt-4">
           <div className="w-full xl:w-8/12 mb-12 xl:mb-0 px-4">

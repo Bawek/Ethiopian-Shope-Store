@@ -1,8 +1,7 @@
-"use client";
+﻿"use client";
 import React from "react";
-import { Admin } from "@/app/[locale]/layouts/Admin";
-import AdminWithOutStat from "@/app/[locale]/layouts/adminWithOutStat";
-import EnhancedTable from "@/app/[locale]/components/Tables/product";
+import AdminWithOutStat from "@/app/layouts/adminWithOutStat";
+import EnhancedTable from "@/app/components/Tables/product";
 import { productHeadCells } from "@/util/headCells";
 import { useGetProductsQuery } from "@/lib/features/products/products";
 
@@ -11,12 +10,7 @@ export default function InventoryPage() {
   const { data, isLoading, isError } = useGetProductsQuery(merchant_id);
 
   return (
-    <Admin
-      subtitle1="Total Product"
-      subtitle2="total Store "
-      subtitle3="out of Stock"
-      subtitle4="All catagories"
-    >
+    <AdminWithOutStat>
       <div className="flex flex-wrap">
         <div className="w-full xl:w-8/12 mb-12 xl:mb-0 px-4">
           {/* <CardLineChart /> */}
@@ -45,6 +39,6 @@ export default function InventoryPage() {
           <h1 className=" flex justify-center items-center">No Products</h1>
         )}
       </div>
-    </Admin>
+    </AdminWithOutStat>
   );
 }

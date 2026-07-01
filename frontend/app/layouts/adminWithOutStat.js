@@ -1,12 +1,12 @@
-"use client";
+﻿"use client";
 import React from "react";
 
 // components
 
-import AdminNavbar from "@/app/[locale]/components/Navbars/AdminNavbar";
-import Sidebar from "@/app/[locale]/components/Sidebar/Sidebar.js";
-import HeaderStats from "@/app/[locale]/components/Headers/HeaderStats.js";
-import FooterAdmin from "@/app/[locale]/components/Footers/FooterAdmin.js";
+import AdminNavbar from "@/app/components/Navbars/AdminNavbar";
+import Sidebar from "@/app/components/Sidebar/Sidebar.js";
+import HeaderStats from "@/app/components/Headers/HeaderStats.js";
+import FooterAdmin from "@/app/components/Footers/FooterAdmin.js";
 import AdminNav from "../components/Navbars/AdminNav";
 
 function AdminWithOutStat({ children }) {

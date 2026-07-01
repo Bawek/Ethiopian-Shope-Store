@@ -26,6 +26,7 @@ const cartRouter = require('./routes/user/cart.route.js')
 const orderRouter = require('./routes/user/order.route.js')
 const contactRoute = require('./routes/contact.route')
 const notificationRouter = require('./routes/notifications.route.js')
+const adminRouter = require('./routes/admin.route')
 
 // Controllers
 const { getDashboardMetrics } = require('./controllers/dashboard.controller.js')
@@ -162,6 +163,9 @@ app.use('/api', contactRoute)
 // Analytics & Dashboard
 app.get('/api/merchant-analytics/:accountId', getMerchantAnalytics)
 app.get('/api/merchant-dashboard/:accountId', getDashboardMetrics)
+
+// Admin routes
+app.use('/api/admin', adminRouter)
 
 // Socket.io Test
 app.post('/iopost', testIo)

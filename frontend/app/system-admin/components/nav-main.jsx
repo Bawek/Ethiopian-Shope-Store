@@ -8,30 +8,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useSelector } from "react-redux"
-import { DashboardCustomizeTwoTone } from "@mui/icons-material"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 export function NavMain({ items }) {
-  const account = useSelector((state) => state.account)
   const pathname = usePathname();
 
-  console.log(pathname,'pathName')
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2">
-            <SidebarMenuButton
-              tooltip="Merchant Dashbaord"
-              className="min-w-8 bg-orange-600 text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
-            >
-              <DashboardCustomizeTwoTone />
-              <span> {account?.firestName} Dashboard</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>

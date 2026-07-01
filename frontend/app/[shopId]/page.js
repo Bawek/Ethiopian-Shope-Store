@@ -21,7 +21,6 @@ export default function Shop() {
 
   useEffect(() => {
     if (data) {
-      console.log("website data ", data);
       const homePageData = data.find((page) => page.name === "Home");
       setHomepage(homePageData);
     }
@@ -71,7 +70,6 @@ export default function Shop() {
     );
     addToCartButtons.forEach((button, index) => {
       button.id = `${index}`;
-      console.log("attached event to ", index);
       button.addEventListener("click", addToCart);
     });
 
@@ -112,7 +110,6 @@ export default function Shop() {
     const productCart = event.currentTarget.closest(".product-cart");
 
     if (!productCart) {
-      console.log("product not found");
       return;
     }
     const productId = productCart.id;
@@ -132,7 +129,6 @@ export default function Shop() {
       image: imagePath,
       quantity: 1,
     };
-    console.log("product added detail item ", productItem);
     localStorage.setItem("productDetailItem", JSON.stringify(productItem));
     router.push(`/${shopId}/product-detail`);
   };
@@ -143,7 +139,6 @@ export default function Shop() {
     const productCart = event.currentTarget.closest(".product-cart");
 
     if (!productCart) {
-      console.log("product not found");
       return;
     }
     const productId = productCart.id;
@@ -185,13 +180,6 @@ export default function Shop() {
         setNumberOfItems(cart.length);
       }
 
-      console.log("this what inside cart", cart);
-      console.log(
-        "Updated cart in local storage:",
-        JSON.parse(localStorage.getItem("cart"))
-      ); // Test local storage
-    } else {
-      console.log(`Product already in cart: ${productName}`);
     }
   };
 

@@ -18,11 +18,6 @@ const REQUIRED_VARS = {
     'CHAPA_SECRET_KEY',
     'CHAPA_PUBLIC_KEY',
     'CHAPA_ENCRYPTION_KEY',
-    'EMAIL_SERVER_HOST',
-    'EMAIL_SERVER_PORT',
-    'EMAIL_SERVER_USER',
-    'EMAIL_SERVER_PASSWORD',
-    'ADMIN_EMAIL',
     'SIGNING_SECRET',
     'BASE_URL',
   ],
@@ -183,10 +178,10 @@ function getConfig() {
       apiUrl: process.env.CHAPA_API_URL || 'https://api.chapa.co/v1',
     },
 
-    // Email
+    // Email (optional)
     email: {
       host: process.env.EMAIL_SERVER_HOST,
-      port: parseInt(process.env.EMAIL_SERVER_PORT, 10),
+      port: process.env.EMAIL_SERVER_PORT ? parseInt(process.env.EMAIL_SERVER_PORT, 10) : undefined,
       user: process.env.EMAIL_SERVER_USER,
       password: process.env.EMAIL_SERVER_PASSWORD,
       senderName: process.env.EMAIL_SENDER_NAME || 'Ethiopian Shop Store',

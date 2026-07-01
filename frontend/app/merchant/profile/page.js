@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 import React from "react";
 import Link from "next/link";
 
 // components
 
 import Footer from "../../components/Footers/Footer";
-import Sidebar from "@/app/[locale]/components/Sidebar/Sidebar.js";
+import Sidebar from "@/app/components/Sidebar/Sidebar.js";
 
 export default function Admin({ children }) {
   return (

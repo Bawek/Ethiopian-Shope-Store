@@ -1,8 +1,8 @@
-import React from "react";
+﻿import React from "react";
 
 // components
 
-import CardStats from "@/app/[locale]/components/Cards/CardStats.js";
+import CardStats from "@/app/components/Cards/CardStats.js";
 
 export default function AdminNav() {
   return (

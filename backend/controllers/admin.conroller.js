@@ -5,7 +5,6 @@ const { validationResult } = require('express-validator');
 const adminController = {
   // Dashboard Stats
   getDashboardStats: async (req, res) => {
-    console.log('error log before try')
     try {
       // Validate request
       const errors = validationResult(req);
@@ -16,7 +15,6 @@ const adminController = {
           errors: errors.array()
         });
       }
-console.log('exsperment')
       // Calculate date ranges
       const now = new Date();
       const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
@@ -35,9 +33,7 @@ console.log('exsperment')
       ] = await Promise.all([
         prisma.order.aggregate({
           _sum: { 
-            product: { 
-              price: true 
-            } 
+            totalAmount: true 
           },
           where: { 
             status: 'DELIVERED',
@@ -52,8 +48,7 @@ console.log('exsperment')
         }),
         prisma.account.count({ 
           where: { 
-            NOT: { refreshToken: null },
-            lastActiveAt: { gte: thirtyDaysAgo }
+            NOT: { refreshToken: null }
           } 
         }),
         prisma.order.count({
@@ -66,8 +61,6 @@ console.log('exsperment')
         prisma.shop.count({ where: { status: 'ACTIVE' } })
       ]);
 
-      console.log("hey error is not happen")
-
       // Calculate growth rate safely
       const previousPeriodOrders = totalOrders - recentOrders;
       const growthRate = previousPeriodOrders > 0 
@@ -78,7 +71,7 @@ console.log('exsperment')
         success: true,
         data: {
           metrics: {
-            totalRevenue: totalRevenue._sum?.product?.price || 0,
+            totalRevenue: totalRevenue._sum?.totalAmount || 0,
             newCustomers,
             activeAccounts,
             growthRate,
@@ -124,53 +117,39 @@ console.log('exsperment')
       let query;
       if (compareYear) {
         query = prisma.$queryRaw`
-          SELECT 
-            TO_CHAR(date_trunc('month', o."createdAt"), 'Month') as month,
+          SELECT
             EXTRACT(MONTH FROM o."createdAt") as month_num,
-            SUM(p.price) as current_year,
-            (SELECT SUM(p2.price) 
-             FROM "Order" o2
-             JOIN "Product" p2 ON o2."productId" = p2.id
-             WHERE EXTRACT(YEAR FROM o2."createdAt") = ${year - 1}
-             AND EXTRACT(MONTH FROM o2."createdAt") = EXTRACT(MONTH FROM o."createdAt")
-             AND o2.status = 'DELIVERED'
-             GROUP BY EXTRACT(MONTH FROM o2."createdAt")) as previous_year
+            TO_CHAR(date_trunc('month', o."createdAt"), 'Month') as month,
+            COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM o."createdAt") = ${year} THEN COALESCE(p.price, 0) ELSE 0 END), 0) as current_year,
+            COALESCE(SUM(CASE WHEN EXTRACT(YEAR FROM o."createdAt") = ${year - 1} THEN COALESCE(p.price, 0) ELSE 0 END), 0) as previous_year
           FROM "Order" o
-          JOIN "Product" p ON o."productId" = p.id
-          WHERE EXTRACT(YEAR FROM o."createdAt") = ${year}
+          LEFT JOIN "products" p ON o."productId" = p.id
+          WHERE EXTRACT(YEAR FROM o."createdAt") IN (${year}, ${year - 1})
           AND o.status = 'DELIVERED'
-          GROUP BY month, month_num
+          GROUP BY month_num, month
           ORDER BY month_num
         `;
       } else {
         query = prisma.$queryRaw`
-          SELECT 
-            TO_CHAR(date_trunc('month', o."createdAt"), 'Month') as month,
+          SELECT
             EXTRACT(MONTH FROM o."createdAt") as month_num,
-            SUM(p.price) as current_year
+            TO_CHAR(date_trunc('month', o."createdAt"), 'Month') as month,
+            COALESCE(SUM(COALESCE(p.price, 0)), 0) as current_year
           FROM "Order" o
-          JOIN "Product" p ON o."productId" = p.id
+          LEFT JOIN "products" p ON o."productId" = p.id
           WHERE EXTRACT(YEAR FROM o."createdAt") = ${year}
           AND o.status = 'DELIVERED'
-          GROUP BY month, month_num
+          GROUP BY month_num, month
           ORDER BY month_num
         `;
       }
 
       const revenueData = await query;
 
-      if (!revenueData || revenueData.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'No revenue data found for the specified period',
-          code: 'NO_REVENUE_DATA'
-        });
-      }
-
       res.status(200).json({
         success: true,
         data: {
-          revenueData,
+          revenueData: revenueData || [],
           timeframe: {
             year: parseInt(year),
             compareWith: compareYear ? parseInt(year) - 1 : null
@@ -204,37 +183,31 @@ console.log('exsperment')
         });
       }
 
-      // Build where clause based on status
-      let whereClause = `WHERE EXTRACT(YEAR FROM "createdAt") = ${year}`;
-      if (status && ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'].includes(status)) {
-        whereClause += ` AND status = '${status}'`;
-      }
-
-      const orderData = await prisma.$queryRaw`
+      let sql = `
         SELECT 
-          TO_CHAR(date_trunc('month', "createdAt"), 'Month') as month,
-          EXTRACT(MONTH FROM "createdAt") as month_num,
+          TO_CHAR(date_trunc('month', o."createdAt"), 'Month') as month,
+          EXTRACT(MONTH FROM o."createdAt") as month_num,
           COUNT(*) as order_count,
-          SUM(p.price) as total_value
+          COALESCE(SUM(COALESCE(p.price, 0)), 0) as total_value
         FROM "Order" o
-        JOIN "Product" p ON o."productId" = p.id
-        ${whereClause}
-        GROUP BY month, month_num
-        ORDER BY month_num
+        LEFT JOIN "products" p ON o."productId" = p.id
+        WHERE EXTRACT(YEAR FROM o."createdAt") = $1
       `;
+      let params = [parseInt(year)];
 
-      if (!orderData || orderData.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'No order data found for the specified period',
-          code: 'NO_ORDER_DATA'
-        });
+      if (status && ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'].includes(status)) {
+        sql += ` AND o.status = $${params.length + 1}`;
+        params.push(status);
       }
+
+      sql += ` GROUP BY date_trunc('month', o."createdAt"), EXTRACT(MONTH FROM o."createdAt") ORDER BY month_num`;
+
+      const orderData = await prisma.$queryRawUnsafe(sql, ...params);
 
       res.status(200).json({
         success: true,
         data: {
-          orderData,
+          orderData: orderData || [],
           filters: {
             year: parseInt(year),
             status: status || 'all'

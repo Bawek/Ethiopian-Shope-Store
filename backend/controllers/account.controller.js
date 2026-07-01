@@ -120,7 +120,6 @@ const getAllAccounts = async (req, res, next) => {
         const accounts = await prisma.account.findMany()
         res.status(200).json({ status: 'success', accounts })
     } catch (error) {
-        console.log(error)
         next(new httpError(error.message, 500))
     }
 
@@ -165,7 +164,6 @@ const updateById = async (req, res, next) => {
 const updateAccount = async (req, res, next) => {
     try {
         const { accountId } = req.params;
-        console.log(accountId)
         const account = await prisma.account.findFirst({
             where: {
                 id: accountId
@@ -288,7 +286,6 @@ const passwordReset = async (req, res, next) => {
     try {
         // Find the user by email
         const user = await prisma.account.findFirst({ where: { email } });
-        console.log(user, 'mail')
         if (!user) {
             return next(new httpError('No one found with this email. Enter a correct one.', 404));
         }

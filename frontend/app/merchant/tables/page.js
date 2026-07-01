@@ -1,13 +1,13 @@
-"use client";
+﻿"use client";
 import React from "react";
 
 // components
 
-import CardTable from "@/app/[locale]/components/Cards/CardTable.js";
+import CardTable from "@/app/components/Cards/CardTable.js";
 
 // layout for page
 
-import { Admin } from "@/app/[locale]/layouts/Admin";
+import AdminWithOutStat from "@/app/layouts/adminWithOutStat";
 import { useGetShopsQuery } from "@/lib/features/shop/publicShopSlice";
 import EnhancedTable from "../../components/Tables/ShopList";
 export default function Tables() {
@@ -15,7 +15,7 @@ export default function Tables() {
   console.log(shops);
 
   return (
-    <Admin>
+    <AdminWithOutStat>
       <div className="flex flex-wrap mt-4">
         <div className="w-full mb-12 px-4">
           <CardTable />
@@ -33,6 +33,6 @@ export default function Tables() {
           )}
         </div>
       </div>
-    </Admin>
+    </AdminWithOutStat>
   );
 }

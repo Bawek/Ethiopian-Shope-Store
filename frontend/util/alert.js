@@ -1,4 +1,4 @@
-import Button from "@mui/material/Button";
+﻿import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { MenuOpen } from "@mui/icons-material";
 import {
@@ -7,8 +7,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CiMenuKebab } from "react-icons/ci";
-import { AddItemForm } from "@/app/[locale]/components/WebBuilder/AddPage/AddItemForm";
-import { DialogDemo } from "@/app/[locale]/components/WebBuilder/AddPage/AddItem";
+import { AddItemForm } from "@/app/components/WebBuilder/AddPage/AddItemForm";
+import { DialogDemo } from "@/app/components/WebBuilder/AddPage/AddItem";
 
 export function PopoverDemo({ action }) {
   const onButtonClick = (e, row) => {

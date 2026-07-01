@@ -17,10 +17,6 @@ export default function CardBarChart({ data }) {
 
     const ctx = chartRef.current.getContext("2d");
 
-    const labels = orderData.map(item => item.month.trim());
-    const currentYearData = orderData.map(item => item.current_year || 0);
-    const previousYearData = orderData.map(item => item.previous_year || 0);
-
     chartInstance.current = new Chart(ctx, {
       type: "bar",
       data: {

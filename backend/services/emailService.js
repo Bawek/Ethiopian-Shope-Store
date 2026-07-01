@@ -1,15 +1,20 @@
-const transporter = require('../config/email.config');
+const { transporter, isEmailConfigured } = require('../config/email.config');
 
 exports.sendContactEmail = async ({ name, email, phone, message }) => {
     try {
+        if (!isEmailConfigured || !transporter) {
+            console.warn('Email not configured. Skipping contact email.');
+            return { success: true, message: 'Email not configured, message logged only' };
+        }
+
         // Validate admin email
-        if (!process.env.ADMIN_EMAIL.includes('@')) {
+        if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_EMAIL.includes('@')) {
             throw new Error('Invalid admin email configuration');
         }
 
         // Send to admin
         await transporter.sendMail({
-            from: `"${process.env.EMAIL_SENDER_NAME}" <${process.env.EMAIL_SERVER_USER}>`,
+            from: `"${process.env.EMAIL_SENDER_NAME || 'Ethiopian Shop Store'}" <${process.env.EMAIL_SERVER_USER}>`,
             to: process.env.ADMIN_EMAIL,
             subject: `New Contact: ${name}`,
             html: `
@@ -25,7 +30,7 @@ exports.sendContactEmail = async ({ name, email, phone, message }) => {
 
         // Send confirmation to user
         await transporter.sendMail({
-            from: `"${process.env.EMAIL_SENDER_NAME}" <${process.env.EMAIL_SERVER_USER}>`,
+            from: `"${process.env.EMAIL_SENDER_NAME || 'Ethiopian Shop Store'}" <${process.env.EMAIL_SERVER_USER}>`,
             to: email,
             subject: 'Thank you for contacting us',
             html: `
@@ -45,8 +50,13 @@ exports.sendContactEmail = async ({ name, email, phone, message }) => {
 exports.sendEmail = async ( to, subject, html ) => {
     console.log('Sending email to:', to, 'with subject:', subject);
     try {
+        if (!isEmailConfigured || !transporter) {
+            console.warn('Email not configured. Skipping email send.');
+            return { success: true, message: 'Email not configured, email skipped' };
+        }
+
         // Validate admin email
-        if (!process.env.ADMIN_EMAIL.includes('@')) {
+        if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_EMAIL.includes('@')) {
             throw new Error('Invalid admin email configuration');
         }
  

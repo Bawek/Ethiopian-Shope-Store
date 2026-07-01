@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 
-import UserDropdown from "@/app/[locale]/components/Dropdowns/UserDropdown.js";
+import UserDropdown from "@/app/components/Dropdowns/UserDropdown.js";
 import styles from "./NavBar.module.css";
 export default function TemplateNavbar() {
   const [isHovered, setIsHovered] = useState(false);

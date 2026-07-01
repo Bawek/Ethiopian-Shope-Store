@@ -1,21 +1,16 @@
-import React from "react";
+﻿import React from "react";
 
-// components
+import AdminWithOutStat from "@/app/layouts/adminWithOutStat";
 
-import MapExample from "@/app/[locale]/components/Maps/MapExample.js";
-import { Admin } from "@/app/[locale]/layouts/Admin";
 export default function Maps() {
   return (
-    <>
+    <AdminWithOutStat>
       <div className="flex flex-wrap">
         <div className="w-full px-4">
           <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded">
-            <MapExample />
           </div>
         </div>
       </div>
-    </>
+    </AdminWithOutStat>
   );
 }
-
-Maps.layout = Admin;

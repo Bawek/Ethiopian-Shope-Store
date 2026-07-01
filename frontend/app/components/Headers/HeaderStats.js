@@ -1,8 +1,8 @@
-'use client'
+﻿'use client'
 import React, { useState, useEffect } from "react";
 // components
 
-import CardStats from "@/app/[locale]/components/Cards/CardStats.js";
+import CardStats from "@/app/components/Cards/CardStats.js";
 import { useGetProductsQuery } from "@/lib/features/products/products";
 export default function HeaderStats({
   subtitle1,

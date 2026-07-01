@@ -57,14 +57,16 @@ export default function CustomDataTable({ data, columns, searchColumen }) {
   return (
     <div className="w-full">
       <div className="flex items-center gap-3 py-4">
-        <Input
-          placeholder={`Filter by ${searchColumen}...`}
-          value={(table.getColumn(searchColumen)?.getFilterValue() || "")}
-          onChange={(event) =>
-            table.getColumn(searchColumen)?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        {searchColumen && (
+          <Input
+            placeholder={`Filter by ${searchColumen}...`}
+            value={(table.getColumn(searchColumen)?.getFilterValue() || "")}
+            onChange={(event) =>
+              table.getColumn(searchColumen)?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto dark:text-white">
