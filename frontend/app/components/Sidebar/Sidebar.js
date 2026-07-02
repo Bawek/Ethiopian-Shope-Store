@@ -2,7 +2,6 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useGetCustomizedTemplateQuery } from "@/lib/features/shop/shop.js";
 import NotificationDropdown from "../../components/Dropdowns/NotificationDropdown.js";
 import UserDropdown from "../../components/Dropdowns/UserDropdown.js";
 import useCheckUnauthorized from "@/lib/features/auth/unauthorise.js";
@@ -10,13 +9,6 @@ import useCheckUnauthorized from "@/lib/features/auth/unauthorise.js";
 
 export default function Sidebar() {
   const [collapseShow, setCollapseShow] = React.useState("hidden");
-  const merchantId = localStorage.getItem("unique_id");
-  const {
-    data: customisedTemplate,
-    error: customisedPageError,
-    isSuccess: isCustomisedPageSuccess,
-  } = useGetCustomizedTemplateQuery(merchantId);
-  useCheckUnauthorized(customisedPageError);
   const pathname = usePathname();
   return (
     <>
@@ -275,15 +267,6 @@ export default function Sidebar() {
                 >
                   <i className="fas fa-user-circle text-blueGray-400 mr-2 text-sm"></i>{" "}
                   Profile Page
-                </Link>
-              </li>
-              <li className="items-center">
-                <Link
-                  href={`/site-builder/${customisedTemplate?.id}`}
-                  className=" text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
-                >
-                  <i className="<i fa-solid fa-shop text-blueGray-400 mr-2 text-sm"></i>{" "}
-                  customize shop
                 </Link>
               </li>
             </ul>

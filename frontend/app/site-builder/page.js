@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import "../../../styles/page.css";
+import "@/styles/page.css";
 import Pagebuilder from "../components/sitebuilder/pageBuilder";
 import { useParams } from "next/navigation";
 function App() {
