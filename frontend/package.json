@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
- 
   },
   "dependencies": {
     "@chatscope/chat-ui-kit-react": "^2.1.1",
@@ -75,16 +74,14 @@
     "grapesjs-preset-mautic": "^1.0.4",
     "grapesjs-preset-webpage": "^1.0.3",
     "grapesjs-style-bg": "^2.0.2",
-
     "html2canvas": "^1.4.1",
     "i18next": "^24.2.2",
     "i18next-browser-languagedetector": "^8.0.2",
     "i18next-http-backend": "^3.0.2",
     "i18next-resources-to-backend": "^1.2.1",
-
+    "jquery": "^4.0.0",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.474.0",
-
     "next": "15.1.6",
     "next-i18n-router": "^5.5.1",
     "next-themes": "^0.4.4",
@@ -105,7 +102,6 @@
     "redux-persist": "^6.0.0",
     "sass": "^1.85.0",
     "socket.io-client": "^4.8.1",
-
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
