@@ -16,4 +16,5 @@ export const config = {
     "/((?!.*\\..*|_next).*)",
     "/(api|trpc)(.*)",
   ],
+  runtime: 'nodejs',
 };
