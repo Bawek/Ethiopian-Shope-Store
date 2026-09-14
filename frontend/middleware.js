@@ -5,15 +5,11 @@ export default function middleware(req) {
 
   // Redirect root path "/" to "/customers"
   if (url.pathname === "/") {
-    url.pathname = "/customers";
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(new URL("/customers", req.url));
   }
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/((?!.*\\..*|_next).*)",
-    "/(api|trpc)(.*)"
-  ]
+  matcher: "/",
 };
