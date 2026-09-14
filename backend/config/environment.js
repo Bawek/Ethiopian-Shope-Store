@@ -191,7 +191,7 @@ function getConfig() {
     // Security
     security: {
       signingSecret: process.env.SIGNING_SECRET,
-      corsOrigin: (process.env.CORS_ORIGIN || 'http://localhost:3000').split(','),
+      corsOrigin: (process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost:3001').split(','),
       rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),
       rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10),
     },
