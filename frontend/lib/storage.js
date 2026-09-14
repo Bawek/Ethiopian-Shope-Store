@@ -1,7 +1,3 @@
-'use client';
-
-import storage from 'redux-persist/lib/storage';
-
 const createNoopStorage = () => ({
     getItem(_key) {
         return Promise.resolve(null);
@@ -14,8 +10,6 @@ const createNoopStorage = () => ({
     },
 });
 
-const storageConfig = typeof window !== 'undefined' ?
-    storage :
-    createNoopStorage();
+const storageConfig = createNoopStorage();
 
 export default storageConfig;
