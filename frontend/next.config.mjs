@@ -10,6 +10,9 @@ const nextConfig = {
       },
     ],
   },
+  sassOptions: {
+    silenceDeprecations: ['legacy-js-api', 'color-functions', 'global-builtin', 'mixed-decls'],
+  },
   // async headers() {
   //   return [
   //     {
