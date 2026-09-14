@@ -12,7 +12,7 @@ import { authSlice } from "./features/auth/authMerchant";
 import { shopApi } from "./features/shop/shop";
 import editorReducer from "./features/editor";
 import shopNameSlice from "./features/shop/shopNameSlice";
-// import { publicShopSlice } from "./features/shop/publicShopSlice";
+import { publicShopSlice } from "./features/shop/publicShopSlice";
 import currentPage from "./features/admin-my/currentPageSlice";
 import currentIdPage from "./features/admin-my/woking-page";
 import promptSlice from "./features/prompt";
@@ -49,7 +49,7 @@ const rootReducer = combineReducers({
 	[orderApi.reducerPath]: orderApi.reducer,
 	[templateApi.reducerPath]: templateApi.reducer,
 	[merchantTemplateApi.reducerPath]: merchantTemplateApi.reducer,
-	// [publicShopSlice.reducerPath]: publicShopSlice.reducer,
+	[publicShopSlice.reducerPath]: publicShopSlice.reducer,
 
 	merchant: merchantSlice,
 	shopName: shopNameSlice,
@@ -83,7 +83,7 @@ export const makeStore = () =>
 				merchantTemplateApi.middleware,
 				accountApi.middleware,
 				orderApi.middleware,
-				// publicShopSlice.middleware
+				publicShopSlice.middleware
 			),
 	});
 
